@@ -16,13 +16,18 @@ headers = {
 
 response = requests.get(url, headers=headers)
 rows = []
+vote_question = ''
 # headers = ''
 # Check if the request was successful (status code 200)
 if response.status_code == 200:
     # Step 2: Parse the HTML content with Pandas
     html_string = response.text
     soup = BeautifulSoup(html_string, 'html.parser')
-
+    question = soup.find('div', class_ ='formBalsKlausimas formBals')
+    question = question.find('div', class_ ='dropdownOptionsContainer')
+    question = question.find('div',class_ = 'dropdownOption border-default primary-background-hover color-light-hover')
+    for q in question:
+        vote_question = vote_question + ' ' + str(q)
     # Find all <table> elements
     # tables = soup.find_all('table')
     table = soup.find('table', class_='bals_table')
@@ -63,6 +68,6 @@ rows = split_list(td_contents, 6)
 # print(result[0])
 # print(td_contents[])
 df = pd.DataFrame(rows, columns=headers)
-
+df['vote_question'] = vote_question
+print(df)
 # Display the DataFrame
-df.to_excel("data/output.xlsx")  
