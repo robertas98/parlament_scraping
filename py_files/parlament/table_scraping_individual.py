@@ -1,6 +1,8 @@
 import pandas as pd
 import parlament_search_parameters
 from pandasql import sqldf
+import custom_functions
+from concurrent.futures import ThreadPoolExecutor
 pysqldf = lambda q: sqldf(q, globals())
 main_df = pd.DataFrame(columns=[
     'Seimo narys'
@@ -14,36 +16,20 @@ main_df = pd.DataFrame(columns=[
 
 df = pd.read_excel('all_votes_keys.xlsx')
 
+# can choose to scrape rows matching certain criteria
 q = """
     SELECT
         *
      FROM df m
+     where 
+        p_kade_id = 5
     ;
     """
 df = sqldf(q)
-# print(df)
 
-for index, i in df.iterrows():  # Using iterrows to iterate over DataFrame rows
-    print(i)
-    df_row = parlament_search_parameters.get_parlament_vote_results(
-        p_kade_id = i['p_kade_id']
-        ,p_ses_id = i['p_ses_id']
-        ,p_fakt_pos_id = i['p_fakt_pos_id']
-        ,p_bals_id = i['p_bals_id']
-        ,parlament_name = i['parlament_name']
-        ,parlament_session_name = i['parlament_session_name']
-        ,parlament_session_meeting_name = i['parlament_session_meeting_name']
-    )
-# df_row = parlament_search_parameters.get_parlament_vote_results(
-#     p_kade_id = 10
-#     ,p_ses_id = 139
-#     ,p_fakt_pos_id = -502011
-#     ,p_bals_id = -54803
-#     ,parlament_name = '2024–2028 metų kadencija'
-#     ,parlament_session_name = '1 eilinė (2024-11-14 – ...)'
-#     ,parlament_session_meeting_name = 'Seimo vakarinis posėdis Nr. 16 (2024-12-19)'
-# )
-    # print(df_row)
-    main_df = pd.concat([main_df, df_row], ignore_index=True)
+for i in parlament_search_parameters.run_parallel_requests(df):
+    main_df =pd.concat([main_df, i], ignore_index=True) 
 
-main_df.to_excel('all_parlament_decisions.xlsx') 
+print('df length', len(main_df))
+print('scraping finished, writing to CSV')
+main_df.to_csv('all_parlament_decisions_kade_5.csv', quotechar='"',sep = ',') 

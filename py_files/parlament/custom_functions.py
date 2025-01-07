@@ -1,4 +1,5 @@
 import pandas as pd
+from concurrent.futures import ThreadPoolExecutor
 def rename_duplicates(df):
     columns = df.columns.tolist()
     seen = set()
@@ -35,3 +36,4 @@ def assign_value_column(df, exclude_columns=None):
     
     # Return the desired columns: first_name and value
     return df[['Seimo narys', 'vote_value']]
+
