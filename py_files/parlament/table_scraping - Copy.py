@@ -4,7 +4,6 @@ from pyspark.sql import SparkSession
 import re 
 from bs4 import BeautifulSoup
 import parlament_search_parameters
-import custom_functions 
 # Initialize Spark session
 spark = SparkSession.builder.master("local").appName("Pandas to PySpark").getOrCreate()
 parlament_ids = parlament_search_parameters.get_parlament_ids()
@@ -17,21 +16,9 @@ main_df = pd.DataFrame(columns=['Seimo narys'
                                 ,'parlament_name'
                                 ,'parlament_session_name'
                                 ,'parlament_session_meeting_name'
-                                ,'vote_url'
-                                ])
-main_df_2 = pd.DataFrame(columns=['Seimo narys'
-                                , 'Už'
-                                , 'Prieš'
-                                ,'Susilaikė'
-                                ,'Nedalyvavo'
-                                ,'vote_question'
-                                ,'parlament_name'
-                                ,'parlament_session_name'
-                                ,'parlament_session_meeting_name'
-                                ,'vote_url'
                                 ])
 # URL of the HTML page containing the table
-url = 'https://www.lrs.lt/sip/portal.show?p_r=37067&p_k=1&p_kade_id=10&p_ses_id=139&p_fakt_pos_id=-502007&p_bals_id=-54675#balsKlausimas'  # Replace with the actual URL
+url = 'https://www.lrs.lt/sip/portal.show?p_r=37067&p_k=1&p_kade_id=10&p_ses_id=139&p_fakt_pos_id=-501996&p_bals_id=-54448#balsKlausimas'  # Replace with the actual URL
 
 # Step 1: Make a GET request to the URL with a User-Agent header
 headers = {
@@ -93,6 +80,5 @@ rows = split_list(td_contents, 6)
 # print(td_contents[])
 df = pd.DataFrame(rows, columns=headers)
 df['vote_question'] = vote_question
-
 print(df)
 # Display the DataFrame
