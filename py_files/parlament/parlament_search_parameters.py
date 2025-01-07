@@ -137,23 +137,55 @@ def get_parlament_vote_results(p_kade_id
         for q in question:
             vote_question = vote_question + ' ' + str(q)
         table = soup.find('table', class_='bals_table')
-        column_names = [header.text.strip() for header in table.find_all('th')] 
+        # column_names = [header.text.strip() for header in table.find_all('th')] 
+        # for html_row in table.find_all('tr')[1:]:  # Skip the header row
+        #     name = table.find('a').text.strip()  # Extract text inside <a> tag
+        #     for td in table.find_all('td'):
+        #         background_color = td.get('style')
+                
+        #         if background_color:
+        #             match = re.search(r'background:\s*(#[0-9a-fA-F]{6}|#[0-9a-fA-F]{3}|rgb\([0-9, ]+\))', background_color)
+        #             if match:
+        #                 td_contents.append(match.group(1))
+        #             else:
+        #                 td_contents.append(td.text.strip())
+        #         else:
+        #             td_contents.append(td.text.strip())      
+        column_names = [header.text.strip() for header in table.find_all('th')]
+
+        # Prepare to store the data
+        td_contents = []
+
+        # Iterate over table rows (skip the header row)
         for html_row in table.find_all('tr')[1:]:  # Skip the header row
-            name = table.find('a').text.strip()  # Extract text inside <a> tag
-            for td in table.find_all('td'):
+            row_data = []  # Store data for each row
+            
+            # Extract the name (assuming it's inside an <a> tag in the first <td>)
+            name_td = html_row.find('td')  # Find the first td which should contain the name
+            if name_td:
+                name = name_td.find('a')
+                if name:
+                    row_data.append(name.text.strip())  # Add name to row data
+            
+            # Now extract other columns for each row
+            for td in html_row.find_all('td')[1:]:  # Skip the first td since it's already handled for the name
                 background_color = td.get('style')
+                td_text = td.text.strip()  # Extract the text from the td
                 
                 if background_color:
+                    # If there is a background color, try to extract the color
                     match = re.search(r'background:\s*(#[0-9a-fA-F]{6}|#[0-9a-fA-F]{3}|rgb\([0-9, ]+\))', background_color)
                     if match:
-                        td_contents.append(match.group(1))
+                        row_data.append(match.group(1))  # Append color to row data
                     else:
-                        td_contents.append(td.text.strip())
+                        row_data.append(td_text)  # Otherwise append the text
                 else:
-                    td_contents.append(td.text.strip())         
+                    row_data.append(td_text)  # Append the plain text if no background color is found
+
+            td_contents.append(row_data)  # Add the complete row data to td_contents
     else:
         print(f"Failed to retrieve the page. Status code: {response.status_code}")
-    rows = split_list(td_contents, 6)
+    rows = td_contents
     df = pd.DataFrame(rows, columns=column_names)
     print('DF LENGTH original',len(df.index))
     if not df.columns.is_unique:
