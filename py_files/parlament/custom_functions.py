@@ -30,7 +30,8 @@ def assign_value_column(df, exclude_columns=None):
     # Iterate over the rows to find the first non-null value column
     for idx, row in df.iterrows():
         for col in value_columns:
-            if pd.notnull(row[col]):  # Check for non-null value
+            # if pd.notnull(row[col]):  # Check for non-null value
+            if row[col] != "":  # Check for non-empty string
                 df.at[idx, 'vote_value'] = col
                 break
     

@@ -6,14 +6,6 @@ import parlament_search_parameters
 import custom_functions
 pd.set_option('display.max_columns', None)
 # Initialize Spark session
-main_df = pd.DataFrame(columns=['Seimo narys'
-                                , 'vote_value'
-                                ,'vote_question'
-                                ,'parlament_name'
-                                ,'parlament_session_name'
-                                ,'parlament_session_meeting_name'
-                                ,'vote_url'
-                                ])
 vote_ids_df = pd.DataFrame(columns=['p_kade_id'
                                 , 'parlament_name'
                                 ,'p_ses_id'
@@ -22,11 +14,17 @@ vote_ids_df = pd.DataFrame(columns=['p_kade_id'
                                 ,'parlament_session_meeting_name'
                                 ,'p_bals_id'
                                 ])
+
+# with ThreadPoolExecutor(max_workers=max_workers) as executor:
+#         # Use executor.map to apply fetch_vote_results concurrently to each row in the DataFrame
+#         results = list(executor.map(fetch_vote_results, [row for _, row in df.iterrows()])
+
 parlament_ids = parlament_search_parameters.get_parlament_ids()
 for parlament_id in parlament_ids:
     parlament_name = parlament_id['parlament_title']
     p_kade_id = parlament_id['p_kade_id']
     parlament_session_ids = parlament_search_parameters.get_parlament_session_ids(p_kade_id=p_kade_id)
+
 
     for parlament_session_id in parlament_session_ids:
 
