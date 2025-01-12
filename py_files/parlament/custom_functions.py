@@ -1,5 +1,6 @@
 import pandas as pd
 from concurrent.futures import ThreadPoolExecutor
+import csv 
 def rename_duplicates(df):
     columns = df.columns.tolist()
     seen = set()
@@ -38,3 +39,27 @@ def assign_value_column(df, exclude_columns=None):
     # Return the desired columns: first_name and value
     return df[['Seimo narys', 'vote_value']]
 
+def list_of_dicts_to_csv(data, csv_file):
+    """
+    Converts a list of dictionaries to a CSV file.
+    :param data: List of dictionaries to be written to the CSV file.
+    :param csv_file: The path where the CSV file will be saved.
+    """
+    if not data:
+        print("No data provided")
+        return
+    
+    # Writing to the CSV file
+    with open(csv_file, mode='w', newline='', encoding='utf-8') as file:
+        writer = csv.DictWriter(file, fieldnames=data[0].keys())
+        
+        # Write the header
+        writer.writeheader()
+        
+        # Write the data
+        writer.writerows(data)
+
+    print(f"Data has been written to {csv_file}")
+
+def split_list(lst, n):
+    return [lst[i:i + n] for i in range(0, len(lst), n)]
