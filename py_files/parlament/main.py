@@ -11,11 +11,11 @@ custom_functions.list_of_dicts_to_csv(search_keys,'search_keys.csv')
 df = pd.read_csv('search_keys.csv')
 parlament_ids = df['p_kade_id'].unique()
 for p_kade_id in parlament_ids:
-    if p_kade_id != 10:
+    # if p_kade_id != 10:
         # print(p_kade_id)
-        filtered_df = df.query("p_kade_id == @p_kade_id") #df[df['p_kade_id'].isin(str(p_kade_id))]
-        ff = parlament_search_parameters.proc_fetch_vote_results(filtered_df)
-        ff.to_csv('votes_{p_kade_id}.csv'.format(p_kade_id=p_kade_id) 
-            , quotechar='"'
-            ,sep = ','
-        )
+    filtered_df = df.query("p_kade_id == @p_kade_id") #df[df['p_kade_id'].isin(str(p_kade_id))]
+    ff = parlament_search_parameters.proc_fetch_vote_results(filtered_df)
+    ff.to_csv('votes_{p_kade_id}.csv'.format(p_kade_id=p_kade_id) 
+        , quotechar='"'
+        ,sep = ','
+    )
